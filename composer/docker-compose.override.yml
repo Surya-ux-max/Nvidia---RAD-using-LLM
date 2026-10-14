@@ -1,0 +1,41 @@
+version: '2.3'
+
+services:
+
+  # During development we want to build our Docker image from relevant
+  # Dockerfiles, as opposed to pulling it from a repository somewhere.
+
+  lab:
+    build: 
+      context: notebooks
+      dockerfile: composer/Dockerfile
+
+  docker_router:
+    build: 
+      context: notebooks/composer/docker_router
+      dockerfile: Dockerfile
+
+  llm_client:
+    build: 
+      context: notebooks/composer/llm_client
+      dockerfile: llm_client.Dockerfile
+    env_file:
+      - .env-dev  ## pass in your environment variable (i.e. NVIDIA_API_KEY)
+
+  chatbot:
+    build: 
+      context: notebooks/chatbot
+      dockerfile: Dockerfile
+
+  chatbot_rproxy:
+    build: 
+      context: notebooks/chatbot
+      dockerfile: Dockerfile
+
+  assessment:
+    ports:
+      - $DEV_ASSESSMENT_PORT:8080
+
+  nginx:
+    ports:
+      - $DEV_NGINX_PORT:80
